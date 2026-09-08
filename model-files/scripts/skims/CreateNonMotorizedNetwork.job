@@ -40,6 +40,26 @@ run pgm = hwynet
         IF (li.1.CNTYPE = '  PED') CNTYPE = 'PED'
         IF (li.1.CNTYPE = '   NA') CNTYPE = 'TANA'
 		
+		IF (NMT2010=0) NMT=0
+		
+		IF (NMT2010=2) NMT=2
+	    
+	    IF (NMT2010=3) NMT=3
+		
+
+	  IF (NMT=0)
+		IF (li.1.FT <6) 
+			DISTPREM = 0
+		ELSE
+			DISTPREM = DISTANCE
+		ENDIF
+	  ELSE
+		DISTPREM = DISTANCE
+	  ENDIF
+
+	
+
+		
 		ROADWAY = LTRIM(ROADWAY)
 
         FEET = DISTANCE * 5280
