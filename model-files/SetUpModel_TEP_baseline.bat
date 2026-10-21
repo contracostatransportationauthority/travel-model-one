@@ -7,11 +7,7 @@
 :: All TEP scenarios are year 2050
 set YEAR=2050
 :: set the location of the model run folder on D; this is where the input and output directories will be copied to
-set RUN_DIR=D:\Scenarios\%YEAR%_BaseY_BCM%YEAR%
-
-:: Should strategies be included? AddStrategies=Yes for Project runs; AddStrategies=No for NoProject runs.
-:: Not clear this is actually used. Will probably comment this out; TEP includes some strategies but not others.
-set AddStrategies=Yes
+set RUN_DIR=D:\TEP_Baseline_v3_test_setup\%YEAR%_BaseY_BCM%YEAR%
 
 :: set the location of the Travel Model Release
 :: use master for now until we create a release
@@ -47,7 +43,7 @@ SET computer_prefix=%computername:~0,4%
 mkdir %RUN_DIR%
 echo SET SOFTWARE_DIR=%Software_Dir%> %RUN_DIR%\Set_Software_Dr.cmd
 echo SET COMPUTER_SETTING=%COMPUTER_SETTING%>> %RUN_DIR%\Set_Software_Dr.cmd
-COMPUTER_SETTING
+
 cd /d %RUN_DIR%
 :: copy over CTRAMP
 mkdir CTRAMP\model
@@ -131,12 +127,12 @@ set PARAMS=%GITHUB_DIR%\config\params_TEP_%YEAR%.properties
 copy /Y "%PARAMS%"                                                                               INPUT\params.properties
 
 :: the telecommute constants (TEP-specific: omits MTC TDM policy)
-copy /Y "%BCM_INPUTS_TEP%telecommute_constants_TEP_%YEAR%.csv" "INPUT/landuse/telecommute_constants.csv"
+copy /Y "%BCM_INPUTS_TEP%\telecommute_constants_TEP_%YEAR%.csv" "INPUT/landuse/telecommute_constants.csv"
 copy /Y "%BCM_INPUTS_SHELF%\inputs_%YEAR%\telecommute_max_rate_county.csv" "INPUT/landuse/telecommute_max_rate_county.csv"
 
 :: the toll file
 mkdir INPUT\hwy
-copy "%BCM_INPUTS_TEP\tolls.csv"                                        	INPUT\hwy\tolls.csv
+copy "%BCM_INPUTS_TEP%\tolls.csv"                                        	INPUT\hwy\tolls.csv
 
 :: ------------------------------------------------------------------------------------------------------
 ::
@@ -147,7 +143,7 @@ copy "%BCM_INPUTS_TEP\tolls.csv"                                        	INPUT\h
 set SCENARIO_INPUTS=D:\network_building\ccta_tep_baseline\data\scenario_files\model_networks\2050
 
 :: highway network
-copy "%SCENARIO_INPUTS\hwy\complete_network_with_externals.net"     INPUT\hwy\complete_network_with_externals.net
+copy "%SCENARIO_INPUTS%\hwy\complete_network_with_externals.net"     INPUT\hwy\complete_network_with_externals.net
 
 
 :: scenario-specific parts of transit network
