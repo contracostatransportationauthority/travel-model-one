@@ -1,6 +1,13 @@
 		  ; maximum wait time for shuttles at the Great America Station set to 5 minutes. NODE #2192946 is the Great America Station. The other two nodes are nearby shuttle stops.
+		  ; this is copied from CCTA no CTP scenrio
 		  factor MAXWAITTIME=5, NODES=2019349, 2192946, 2019349
 		  
+		  ;Mobility Hubs within Contra Costa County have been commented out (and kept at the bottom of the file for traceability)
 		  ; seemless transit
-		  factor MAXWAITTIME=5, NODES=9550800,2192807,1027617,1027620,1027608,4507449,3515736,3058739,3011849,2625944,2625953
-		  factor MAXWAITTIME=3, NODES=1556378,1556371,5015671,3097281,2625948,2625959
+		  factor MAXWAITTIME=5, NODES=9550800,2192807,1027617,1027620,1027608,4507449,351573,2625944,2625953
+		  factor MAXWAITTIME=3, NODES=1556378,1556371,5015671,2625948,2625959
+		  
+		  
+ 		  ; seemless transit - excluded
+		  ;factor MAXWAITTIME=5, NODES=3058739,3011849
+		  ;factor MAXWAITTIME=3, NODES=3097281
