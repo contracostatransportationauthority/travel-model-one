@@ -134,6 +134,10 @@ copy /Y "%PARAMS%"                                                              
 copy /Y "%BCM_INPUTS_TEP%telecommute_constants_TEP_%YEAR%.csv" "INPUT/landuse/telecommute_constants.csv"
 copy /Y "%BCM_INPUTS_SHELF%\inputs_%YEAR%\telecommute_max_rate_county.csv" "INPUT/landuse/telecommute_max_rate_county.csv"
 
+:: the toll file
+mkdir INPUT\hwy
+copy "%BCM_INPUTS_TEP\tolls.csv"                                        	INPUT\hwy\tolls.csv
+
 :: ------------------------------------------------------------------------------------------------------
 ::
 :: Step 5: Copy scenario-specific inputs
@@ -143,9 +147,8 @@ copy /Y "%BCM_INPUTS_SHELF%\inputs_%YEAR%\telecommute_max_rate_county.csv" "INPU
 set SCENARIO_INPUTS=D:\network_building\ccta_tep_baseline\data\scenario_files\model_networks\2050
 
 :: highway network
-mkdir INPUT\hwy
 copy "%SCENARIO_INPUTS\hwy\complete_network_with_externals.net"     INPUT\hwy\complete_network_with_externals.net
-copy "%SCENARIO_INPUTS\hwy\tolls.csv"                                        	INPUT\hwy\tolls.csv
+
 
 :: scenario-specific parts of transit network
 copy "%SCENARIO_INPUTS%\trn\transit.lin"                                        	INPUT\trn\transit.lin
