@@ -132,7 +132,7 @@ copy /Y "%PARAMS%"                                                              
 :: ------
 :: Telecommute V2 strategy
 :: ------
-set TELECOMMUTE_CONFIG=%ALL_BCM_INPUTS%\inputs_%YEAR%\telecommute_constants_%YEAR%.csv
+set TELECOMMUTE_CONFIG=%ALL_BCM_INPUTS%\inputs_%YEAR%\telecommute_constants_TEP_%YEAR%.csv
 mkdir main
 copy /Y "%TELECOMMUTE_CONFIG%" "INPUT/landuse/telecommute_constants.csv"
 copy /Y "%ALL_BCM_INPUTS%\inputs_%YEAR%\telecommute_max_rate_county.csv" "INPUT/landuse/telecommute_max_rate_county.csv"
