@@ -1,0 +1,72 @@
+{
+  "output_dir": "", 
+  "paths": {
+    "output_dir": "D:/No San Pablo BRT/2050_BaseY_BCM2050",
+
+    "scenario_files": {
+      "trnline_file": "trn/trnline.csv",
+      "trnlink_file": "trn/trnlink.csv",
+      "taz_data": "landuse/tazData.csv",
+      "time_skims": "database/TimeSkimsDatabaseAM.csv",
+      "transit_waiting_time": "metrics/transit_times_by_acc_mode_egr_taz.csv",
+      "highway_assignment_dir": "hwy/{iteration}",
+      "transit_assignment_dir": "trn/TransitAssignment.{iteration}",
+      "metrics_output_dir": "metrics"
+    },
+
+     "reference_files": {
+      "taz_filter_file": "D:/Scenarios/2020_BaseY_BCM2020/scenario_metrics_refactor/config/taz_filter.csv",
+      "stop_filter_file": "D:/Scenarios/2020_BaseY_BCM2020/scenario_metrics_refactor/config/transit_stops.csv",
+      "transit_mode_line": "D:/Scenarios/2020_BaseY_BCM2020/transitModeAndLine.csv"
+    }
+  },
+  "run": {
+    "iteration": "iter3",
+    "time_periods": ["AM", "PM", "MD", "EV", "EA"]
+  },
+  "taz": {
+    "zone_column": "ZONE",
+    "filter_zone_column": "TAZ",
+    "county_code_column": "COUNTY",
+    "county_name_column": "County Name",
+    "population_column": "TOTPOP",
+    "employment_column": "TOTEMP",
+    "validate_binary_filters": true
+  },
+  "transit_delay": {
+    "enabled": true,
+    "group_by": ["COUNTY", "Agency", "timeperiod"],
+    "filters": {
+      "COUNTY": ["Contra Costa", "Alameda", "San Francisco"]
+    },
+    "output_file": "transit_in_vehicle_delay.csv"
+  },
+  "transit_boarding": {
+    "enabled": true,
+    "group_by": ["COUNTY", "Agency","Technology", "timeperiod"],
+    "pivot_index": ["COUNTY", "Agency","Technology"],
+    "filters": {
+      "COUNTY": ["Contra Costa", "Alameda", "San Francisco"]
+    },
+    "boarding_output_file": "transit_boardings.csv",
+    "boarding_by_stops_output_file": "transit_boardings_by_stops.csv"
+  },
+  "transit_waiting": {
+    "enabled": true,
+    "group_by": ["COUNTY", "Transit Mode", "Access"],
+    "filters": {
+      "COUNTY": ["Contra Costa", "Alameda", "San Francisco"]
+    },
+    "output_file": "transit_waiting_time.csv"
+  },
+  "transit_modes": [
+    "wlk_com_wlk", "drv_com_wlk", "wlk_com_drv",
+    "wlk_hvy_wlk", "drv_hvy_wlk", "wlk_hvy_drv",
+    "wlk_lrf_wlk", "drv_lrf_wlk", "wlk_lrf_drv",
+    "wlk_exp_wlk", "drv_exp_wlk", "wlk_exp_drv",
+    "wlk_loc_wlk", "drv_loc_wlk", "wlk_loc_drv"
+  ],
+  "highway_columns": [
+    "A", "B", "FT", "AT", "COUNTY", "DISTANCE", "FFS","LANES", "FFT", "CTIM", "BRT"
+  ]
+}
