@@ -1,27 +1,21 @@
-# import json
-# from pathlib import Path
+import json
+from pathlib import Path
 
 
-# def load_config(filename):
-#     path = Path(filename).resolve()
-#     with path.open("r", encoding="utf-8") as stream:
-#         config = json.load(stream)
-#     config["_config_dir"] = str(path.parent)
-#     return config
+def load_config(filename):
+    config_path = Path(filename).resolve()
+    with config_path.open("r", encoding="utf-8") as stream:
+        config = json.load(stream)
+    base_dir = Path(config.get("paths", {}).get("base_dir", "."))
+    if not base_dir.is_absolute():
+        base_dir = config_path.parent / base_dir
+    config["_base_dir"] = str(base_dir.resolve())
+    return config
 
 
-# def resolve_model_path(config, key):
-#     output_dir = Path(config["paths"]["output_dir"])
-
-#     if not output_dir.is_absolute():
-#         output_dir = (Path(config["_config_dir"]) / output_dir).resolve()
-
-#     paths = config["paths"]
-
-#     if key in paths["scenario_files"]:
-#         return output_dir / paths["scenario_files"][key]
-
-#     if key in paths["reference_files"]:
-#         return Path(paths["reference_files"][key])
-
-#     raise KeyError(f"Unknown path key: {key}")
+def resolve_path(config, value):
+    """Resolve an input or output path against the configured base directory."""
+    path = Path(value)
+    if path.is_absolute():
+        return path
+    return (Path(config["_base_dir"]) / path).resolve()

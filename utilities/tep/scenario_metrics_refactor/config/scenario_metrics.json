@@ -1,17 +1,88 @@
 {
+  "run_existing_metrics": false,
+  "ctp_metrics": {
+    "enabled": true,
+    "prepared_highway_network_layer": "Cube_Network_RTPC_QAQC",
+    "metrics": {
+      "network_vmt": {
+        "enabled": true,
+        "output_file": "network_vmt_by_rtpc.csv"
+      },
+      "freeway_delay": {
+        "enabled": true,
+        "output_file": "freeway_delay_by_name.csv"
+      },
+      "freeway_speed": {
+        "enabled": true,
+        "output_file": "freeway_speed_by_link.csv"
+      },
+      "best_travel_time": {
+        "enabled": true,
+        "periods": {"AM": [6, 10], "MD": [10, 15], "PM": [15, 19]},
+        "output_file": "best_travel_time_{period}.csv",
+        "routes": [
+          {"name": "Richmond-Downtown Oakland", "origin_flag": "KeyOD_Richmond", "destination_flag": "KeyOD_Downtown_Oakland"},
+          {"name": "Downtown Oakland-Richmond", "origin_flag": "KeyOD_Downtown_Oakland", "destination_flag": "KeyOD_Richmond"},
+          {"name": "Walnut Creek-Downtown San Francisco", "origin_flag": "KeyOD_Walnut_Creek", "destination_flag": "KeyOD_Downtown_San_Francisco"},
+          {"name": "Downtown San Francisco-Walnut Creek", "origin_flag": "KeyOD_Downtown_San_Francisco", "destination_flag": "KeyOD_Walnut_Creek"},
+          {"name": "Moraga-Downtown San Francisco", "origin_flag": "KeyOD_Moraga", "destination_flag": "KeyOD_Downtown_San_Francisco"},
+          {"name": "Downtown San Francisco-Moraga", "origin_flag": "KeyOD_Downtown_San_Francisco", "destination_flag": "KeyOD_Moraga"},
+          {"name": "San Ramon-Downtown San Jose", "origin_flag": "KeyOD_San_Ramon", "destination_flag": "KeyOD_Downtown_San_Jose"},
+          {"name": "Downtown San Jose-San Ramon", "origin_flag": "KeyOD_Downtown_San_Jose", "destination_flag": "KeyOD_San_Ramon"},
+          {"name": "Brentwood-Walnut Creek", "origin_flag": "KeyOD_Brentwood", "destination_flag": "KeyOD_Walnut_Creek"},
+          {"name": "Walnut Creek-Brentwood", "origin_flag": "KeyOD_Walnut_Creek", "destination_flag": "KeyOD_Brentwood"},
+          {"name": "Walnut Creek-Dublin", "origin_flag": "KeyOD_Walnut_Creek", "destination_flag": "KeyOD_Dublin"},
+          {"name": "Dublin-Walnut Creek", "origin_flag": "KeyOD_Dublin", "destination_flag": "KeyOD_Walnut_Creek"}
+        ]
+      },
+      "school_area": {
+        "enabled": true,
+        "buffer_miles": 0.5,
+        "vmt_output_file": "school_area_vmt_by_rtpc.csv",
+        "speed_output_file": "school_area_average_speed_by_rtpc.csv"
+      },
+      "vmt_rates": {
+        "enabled": false,
+        "output_file": "vmt_rates_by_rtpc.csv",
+        "detail_output_file": "vmt_rates_by_taz.csv"
+      },
+      "active_transportation": {
+        "enabled": false,
+        "distance_limit": 3.0,
+        "output_file": "active_transportation_by_rtpc.csv",
+        "combined_output_file": "combined_walk_bike_by_rtpc.csv"
+      },
+      "person_trip_mode_share": {
+        "enabled": true,
+        "output_file": "person_trip_mode_share_by_rtpc.csv"
+      }
+    }
+  },
   "paths": {
-    "output_dir": "D:/No San Pablo BRT/2050_BaseY_BCM2050",
-    "trnline_file": "D:/No San Pablo BRT/2050_BaseY_BCM2050/trn/trnline.csv",
-    "trnlink_file": "D:/No San Pablo BRT/2050_BaseY_BCM2050/trn/trnlink.csv",
+    "base_dir": "..",
+    "metrics_output_dir": "outputs/ctp_test",
+    "prepared_highway_network": "data_test/GIS_data/Cube_Network_RTPC_QAQC.gpkg",
+    "taz_filter": "config/taz_filter.csv",
+    "schools": "data_test/GIS_data/school.shp",
+    "individual_trips": "data_test/main/indivTripData_3.csv",
+    "joint_trips": "data_test/main/jointTripData_3.csv",
+    "time_skims_by_period": {
+      "AM": "data_test/database/TimeSkimsDatabaseAM.csv",
+      "MD": "data_test/database/TimeSkimsDatabaseMD.csv",
+      "PM": "data_test/database/TimeSkimsDatabasePM.csv"
+    },
+    "vmt_home_work": "data_test/main/AutoTripsVMT_perOrigDestHomeWork.csv",
+    "persons_home_work": "data_test/main/AutoTripsVMT_personsHomeWork.csv",
+    "active_distances": "data_test/database/nonmotorized_distances.csv",
+    "trnline_file": "trn/trnline.csv",
+    "trnlink_file": "trn/trnlink.csv",
     "taz_data": "landuse/tazData.csv",
-    "taz_filter_file": "D:/Scenarios/2020_BaseY_BCM2020/scenario_metrics_refactor/config/taz_filter.csv",
-    "stop_filter_file": "D:/Scenarios/2020_BaseY_BCM2020/scenario_metrics_refactor/config/transit_stops.csv",
-    "time_skims": "D:/No San Pablo BRT/2050_BaseY_BCM2050/database/TimeSkimsDatabaseAM.csv",
-    "transit_mode_line": "D:/Scenarios/2020_BaseY_BCM2020/transitModeAndLine.csv",
-    "transit_waiting_time": "D:/No San Pablo BRT/2050_BaseY_BCM2050/metrics/transit_times_by_acc_mode_egr_taz.csv",
-    "highway_assignment_dir": "D:/No San Pablo BRT/2050_BaseY_BCM2050/hwy/{iteration}",
-    "transit_assignment_dir": "D:/No San Pablo BRT/2050_BaseY_BCM2050/trn/TransitAssignment.{iteration}",
-    "metrics_output_dir": "D:/No San Pablo BRT/2050_BaseY_BCM2050/metrics"
+    "stop_filter_file": "config/transit_stops.csv",
+    "accessibility_time_skims": "database/TimeSkimsDatabaseAM.csv",
+    "transit_mode_line": "transitModeAndLine.csv",
+    "transit_waiting_time": "metrics/transit_times_by_acc_mode_egr_taz.csv",
+    "highway_assignment_dir": "hwy/{iteration}",
+    "transit_assignment_dir": "trn/TransitAssignment.{iteration}"
   },
   "run": {
     "iteration": "iter3",

@@ -1,14 +1,16 @@
 import argparse
 import pandas as pd
-from core.config import load_config, resolve_model_path
-from core.constants import COUNTY_CODES, EXCLUDED_TRANSIT_MODES
-from core.filters import add_taz_filters, apply_filters
-from io_utils.loaders import load_taz_data, load_time_skims, load_transit_mode_line, load_transit_waiting, load_highway_network, load_transit_links,load_transit_link,load_transit_line,load_transit_stop_filter
-from io_utils.outputs import write_metric
-from io_utils.validation import require_columns
-from metrics.accessibility import calculate_accessibility, calculate_population_share
-from metrics.transit_delay import calculate_link_ivd
-from metrics.transit_waiting import calculate_waiting_time
+from core.config import load_config, resolve_path
+from io_utils.loaders import (
+    load_prepared_highway_network, load_prepared_highway_geodata,
+    load_trip_tables, load_filtered_time_skims, load_active_distances,
+)
+from metrics.highway import calculate_network_vmt, calculate_freeway_delay, calculate_freeway_speed
+from metrics.travel_times import build_route_pairs, prepare_trip_mode_counts, calculate_best_travel_times
+from metrics.schools import select_school_area_links, calculate_school_measures
+from metrics.vmt_rates import calculate_vmt_rates
+from metrics.active_transportation import calculate_active_transportation
+from metrics.mode_share import calculate_mode_share
 
 
 def get_high_frequency_transit_supplinks(trnline, trnlink, max_frequency=15, max_mode=10, max_node=6626, max_distance=0.5):
@@ -25,13 +27,122 @@ def calculate_population_share_transit_access(zonal_data, origin_filter, eligibl
     return pd.DataFrame({'origin_filter': [origin_filter], 'eligible_population': [eligible_population], 'total_population': [total_population], 'population_share': [population_share]})
 
 
+def run_ctp_metrics(config):
+    """Run all configured CTP metrics from the shared scenario-metrics entry point."""
+    metric_config = config.get('ctp_metrics', {})
+    if not metric_config.get('enabled', False):
+        return
+
+    paths = config['paths']
+    network = load_prepared_highway_network(
+        resolve_path(config, paths['prepared_highway_network']),
+        metric_config.get('prepared_highway_network_layer'),
+    )
+    output_dir = resolve_path(config, paths['metrics_output_dir'])
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    metrics = metric_config['metrics']
+    if metrics['network_vmt'].get('enabled', True):
+        result, _ = calculate_network_vmt(network)
+        result.to_csv(output_dir / metrics['network_vmt']['output_file'], index=False)
+    if metrics['freeway_delay'].get('enabled', True):
+        result = calculate_freeway_delay(network)
+        result.to_csv(output_dir / metrics['freeway_delay']['output_file'], index=False)
+    if metrics['freeway_speed'].get('enabled', True):
+        result = calculate_freeway_speed(network)
+        result.to_csv(output_dir / metrics['freeway_speed']['output_file'], index=False)
+
+    travel_config = metrics.get('best_travel_time', {})
+    if travel_config.get('enabled', False):
+        taz_filters = pd.read_csv(resolve_path(config, paths['taz_filter']))
+        route_pairs = build_route_pairs(taz_filters, travel_config['routes'])
+        individual, joint = load_trip_tables(
+            resolve_path(config, paths['individual_trips']),
+            resolve_path(config, paths['joint_trips']),
+            usecols=['orig_taz', 'dest_taz', 'depart_hour', 'trip_mode'],
+        )
+        for period, hours in travel_config['periods'].items():
+            counts = prepare_trip_mode_counts(individual, joint, route_pairs, hours[0], hours[1])
+            skim_path = resolve_path(config, paths['time_skims_by_period'][period])
+            skims = load_filtered_time_skims(skim_path, route_pairs)
+            result = calculate_best_travel_times(counts, skims, route_pairs)
+            result.insert(1, 'TOD', period)
+            result.to_csv(output_dir / travel_config['output_file'].format(period=period), index=False)
+
+    school_config = metrics.get('school_area', {})
+    if school_config.get('enabled', False):
+        roads = load_prepared_highway_geodata(
+            resolve_path(config, paths['prepared_highway_network']),
+            metric_config.get('prepared_highway_network_layer'))
+        schools = load_prepared_highway_geodata(resolve_path(config, paths['schools']))
+        school_links = select_school_area_links(roads, schools, school_config.get('buffer_miles', 0.5))
+        vmt, speed = calculate_school_measures(network, school_links)
+        vmt.to_csv(output_dir / school_config['vmt_output_file'], index=False)
+        speed.to_csv(output_dir / school_config['speed_output_file'], index=False)
+
+    rates_config = metrics.get('vmt_rates', {})
+    if rates_config.get('enabled', False):
+        vmt_data = pd.read_csv(resolve_path(config, paths['vmt_home_work']))
+        persons = pd.read_csv(resolve_path(config, paths['persons_home_work']))
+        taz_filters = pd.read_csv(resolve_path(config, paths['taz_filter']))
+        rates, detail = calculate_vmt_rates(vmt_data, persons, taz_filters)
+        rates.to_csv(output_dir / rates_config['output_file'], index=False)
+        detail.to_csv(output_dir / rates_config['detail_output_file'], index=False)
+
+    active_config = metrics.get('active_transportation', {})
+    if active_config.get('enabled', False):
+        individual = pd.read_csv(resolve_path(config, paths['individual_trips']),
+                                 usecols=['orig_taz', 'dest_taz', 'trip_mode'])
+        joint = pd.read_csv(resolve_path(config, paths['joint_trips']),
+                            usecols=['orig_taz', 'dest_taz', 'trip_mode', 'num_participants'])
+        taz_filters = pd.read_csv(resolve_path(config, paths['taz_filter']))
+        distances = load_active_distances(resolve_path(config, paths['active_distances']))
+        detail, combined = calculate_active_transportation(
+            individual, joint, taz_filters, distances, active_config.get('distance_limit', 3.0))
+        detail.to_csv(output_dir / active_config['output_file'], index=False)
+        combined.to_csv(output_dir / active_config['combined_output_file'], index=False)
+
+    mode_config = metrics.get('person_trip_mode_share', {})
+    if mode_config.get('enabled', False):
+        individual = pd.read_csv(resolve_path(config, paths['individual_trips']),
+                                 usecols=['orig_taz', 'dest_taz', 'trip_mode'])
+        joint = pd.read_csv(resolve_path(config, paths['joint_trips']),
+                            usecols=['orig_taz', 'dest_taz', 'trip_mode', 'num_participants'])
+        taz_filters = pd.read_csv(resolve_path(config, paths['taz_filter']))
+        result = calculate_mode_share(individual, joint, taz_filters)
+        result.to_csv(output_dir / mode_config['output_file'], index=False)
+
+
 def run(config):
+    run_ctp_metrics(config)
+
+    # Keep the existing metrics integrated, but skip them with the temporary
+    # test configuration until the production JSON is available.
+    if not config.get('run_existing_metrics', True):
+        print('Existing metrics are disabled by run_existing_metrics=false')
+        return
+
+    # Legacy-only dependencies are imported after the switch so a CTP-only run
+    # does not require DBF/CUBE-related packages or inputs.
+    from core.constants import COUNTY_CODES, EXCLUDED_TRANSIT_MODES
+    from core.filters import add_taz_filters, apply_filters
+    from io_utils.loaders import (
+        load_taz_data, load_time_skims, load_transit_mode_line,
+        load_transit_waiting, load_highway_network, load_transit_links,
+        load_transit_link, load_transit_line, load_transit_stop_filter,
+    )
+    from io_utils.outputs import write_metric
+    from io_utils.validation import require_columns
+    from metrics.accessibility import calculate_accessibility, calculate_population_share
+    from metrics.transit_delay import calculate_link_ivd
+    from metrics.transit_waiting import calculate_waiting_time
+
     taz = load_taz_data(config)
     zone_column = config['taz']['zone_column']
     require_columns(taz, [zone_column, config['taz']['county_code_column'], config['taz']['population_column'], config['taz']['employment_column']], 'TAZ data')
     taz[config['taz']['county_name_column']] = taz[config['taz']['county_code_column']].map(COUNTY_CODES)
     taz = pd.concat([taz, pd.get_dummies(taz[config['taz']['county_name_column']], dtype='int8')], axis=1)
-    filter_file = resolve_model_path(config, key='taz_filter_file')
+    filter_file = resolve_path(config, config['paths']['taz_filter'])
     taz, user_filter_columns = add_taz_filters(taz, filter_file, zone_column, config['taz']['filter_zone_column'], config['taz']['validate_binary_filters'])
     county_filter_columns = list(COUNTY_CODES.values())
     skims = load_time_skims(config)
