@@ -151,6 +151,21 @@ copy "%SCENARIO_INPUTS%\trn\transit.lin"                                        
 copy "%SCENARIO_INPUTS%\trn\vehtype.pts"                                        	INPUT\trn\vehtype.pts
 
 :: Mobility hub assumptions
-:: For baseline, don't need to change anything. For some scenarios will need to rename eg
-:: seemless_xfers_2035_and_beyond.block = seemless_xfers_all.block
+:: For baseline, don't need to change anything.
+
+:: For all mobility hubs scenario:
+::copy CTRAMP\scripts\block\seemless_xfers_allHubs.block CTRAMP\scripts\block\seemless_xfers_2035_and_beyond.block
+
+:: For all-in-BART scenario:
+::copy CTRAMP\scripts\block\seemless_xfers_BARTHubs.block CTRAMP\scripts\block\seemless_xfers_2035_and_beyond.block
+
+:: For TPC tier 1 scenario:
+::copy CTRAMP\scripts\block\seemless_xfers_TPC1Hubs.block CTRAMP\scripts\block\seemless_xfers_2035_and_beyond.block
+
+:: For TPC tier 2 scenario:
+::copy CTRAMP\scripts\block\seemless_xfers_TPC2Hubs.block CTRAMP\scripts\block\seemless_xfers_2035_and_beyond.block
+
+:: For TPC tier 3 scenario:
+::copy CTRAMP\scripts\block\seemless_xfers_TPC3Hubs.block CTRAMP\scripts\block\seemless_xfers_2035_and_beyond.block
+
 :end
