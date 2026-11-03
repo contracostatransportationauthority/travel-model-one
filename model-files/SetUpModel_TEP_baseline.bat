@@ -7,16 +7,17 @@
 :: All TEP scenarios are year 2050
 set YEAR=2050
 :: set the location of the model run folder on D; this is where the input and output directories will be copied to
-set RUN_DIR=D:\TEP_Baseline_v3_test_setup\%YEAR%_BaseY_BCM%YEAR%
+set RUN_DIR=D:\Scenarios\%YEAR%_BaseY_BCM%YEAR%
 
 :: set the location of the Travel Model Release
 :: use master for now until we create a release
-set GITHUB_DIR=C:\Model_BCM\Model_Files\AlaCC_Model_TEP_branch\travel-model-one
+set GITHUB_DIR=Z:\projects\ccta\541230602\travel-model-one
 :: some inputs come from off-the-shelf model
-set BCM_INPUTS_SHELF=C:\Model_BCM\Model_Files\Alacc_Inputs
+set BCM_INPUTS_SHELF=Z:\projects\ccta\541230602\AlaCC_Inputs
 :: For TEP-specific inputs that don't vary by scenario
-set BCM_INPUTS_TEP=D:\TEP_COMMON_INPUTS
-set Software_Dir=C:\Model_BCM\Model_Files\AlaCC_Software
+set BCM_INPUTS_TEP=Z:\projects\ccta\541230602\AlaCC_Inputs\TEP baseline inputs
+set Software_Dir=Z:\projects\ccta\31000190\Raghu\release_model\AlaCC_Software
+set SCENARIO_INPUTS=Z:\projects\ccta\541230602\AlaCC_Inputs\TEP baseline inputs
 :: HIGH or MED
 set COMPUTER_SETTING=HIGH
 
@@ -111,9 +112,10 @@ mkdir INPUT\warmstart\nonres
 copy /Y "%PREV_RUN_DIR%\main\*.tpp"                                                       		INPUT\warmstart\main
 copy /Y "%PREV_RUN_DIR%\nonres\*.tpp"                                                     		INPUT\warmstart\nonres
 
+mkdir INPUT\hwy
 
 :: Transit network properties that are not scenario-specific
-:mkdir INPUT\trn
+mkdir INPUT\trn
 c:\windows\system32\Robocopy.exe /E "%BCM_INPUTS_SHELF%\trn"                                     		INPUT\trn
 
 :: ------------------------------------------------------------------------------------------------------
@@ -130,20 +132,16 @@ copy /Y "%PARAMS%"                                                              
 copy /Y "%BCM_INPUTS_TEP%\telecommute_constants_TEP_%YEAR%.csv" "INPUT/landuse/telecommute_constants.csv"
 copy /Y "%BCM_INPUTS_SHELF%\inputs_%YEAR%\telecommute_max_rate_county.csv" "INPUT/landuse/telecommute_max_rate_county.csv"
 
-:: the toll file
-mkdir INPUT\hwy
-copy "%BCM_INPUTS_TEP%\tolls.csv"                                        	INPUT\hwy\tolls.csv
-
 :: ------------------------------------------------------------------------------------------------------
 ::
 :: Step 5: Copy scenario-specific inputs
 :: 
 :: ------------------------------------------------------------------------------------------------------
 
-set SCENARIO_INPUTS=D:\network_building\ccta_tep_baseline\data\scenario_files\model_networks\2050
 
 :: highway network
 copy "%SCENARIO_INPUTS%\hwy\complete_network_with_externals.net"     INPUT\hwy\complete_network_with_externals.net
+copy "%SCENARIO_INPUTS%\hwy\tolls.csv"                                        	INPUT\hwy\tolls.csv
 
 
 :: scenario-specific parts of transit network

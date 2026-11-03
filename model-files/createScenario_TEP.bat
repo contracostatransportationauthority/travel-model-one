@@ -1,0 +1,1 @@
+SetUpModel_TEP_baseline.bat  2050 > SetUpModel_TEP_baseline.log 2>&1
