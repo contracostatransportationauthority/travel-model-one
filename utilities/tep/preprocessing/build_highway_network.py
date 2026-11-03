@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import warnings
 
 import geopandas as gpd
 import pandas as pd
@@ -160,12 +161,26 @@ def build_highway_network(config: dict) -> Path:
         geometry="geometry",
         crs=geometry.crs,
     )
-    if final.geometry.isna().any():
-        count = int(final.geometry.isna().sum())
-        raise ValueError(f"Prepared highway network has {count} links without geometry")
-
     output = resolve_path(config, "rtpc_highway_network")
     output.parent.mkdir(parents=True, exist_ok=True)
+    if final.geometry.isna().any():
+        count = int(final.geometry.isna().sum())
+        if count == len(final):
+            raise ValueError("Prepared highway network has no links with geometry")
+        audit_output = output.with_name(
+            f"{output.stem}_links_without_geometry.csv"
+        )
+        final.loc[final.geometry.isna()].drop(columns="geometry").to_csv(
+            audit_output, index=False
+        )
+        warnings.warn(
+            f"Prepared highway network has {count} links omitted by all CUBE "
+            "geometry exports. They are retained for non-spatial and countywide "
+            f"metrics but excluded from spatial RTPC/school calculations. Audit: "
+            f"{audit_output}",
+            stacklevel=2,
+        )
+
     final.to_file(
         output,
         layer=config["run"]["rtpc_highway_network_layer"],
