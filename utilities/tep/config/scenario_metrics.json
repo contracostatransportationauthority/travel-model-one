@@ -1,0 +1,307 @@
+{
+  "missing_input_policy": "skip",
+  "metrics": {
+    "network_vmt": {
+      "enabled": true,
+      "metric_category": "ctp_metric",
+      "source": "Future_No_Project_CombinedPerformanceMeasures.ipynb",
+      "output_file": "network_vmt_by_rtpc.csv"
+    },
+    "freeway_delay": {
+      "enabled": true,
+      "metric_category": "ctp_metric",
+      "source": "Future_No_Project_CombinedPerformanceMeasures.ipynb",
+      "output_file": "freeway_delay_by_name.csv"
+    },
+    "freeway_speed": {
+      "enabled": true,
+      "metric_category": "ctp_metric",
+      "source": "Future_No_Project_CombinedPerformanceMeasures.ipynb",
+      "output_file": "freeway_speed_by_link.csv"
+    },
+    "best_travel_time": {
+      "enabled": true,
+      "metric_category": "ctp_metric",
+      "source": "Future_No_Project_CombinedPerformanceMeasures.ipynb",
+      "periods": {
+        "AM": [
+          6,
+          10
+        ],
+        "MD": [
+          10,
+          15
+        ],
+        "PM": [
+          15,
+          19
+        ]
+      },
+      "output_file": "best_travel_time_{period}.csv",
+      "routes": [
+        {
+          "name": "Richmond-Downtown Oakland",
+          "origin_flag": "KeyOD_Richmond",
+          "destination_flag": "KeyOD_Downtown_Oakland"
+        },
+        {
+          "name": "Downtown Oakland-Richmond",
+          "origin_flag": "KeyOD_Downtown_Oakland",
+          "destination_flag": "KeyOD_Richmond"
+        },
+        {
+          "name": "Walnut Creek-Downtown San Francisco",
+          "origin_flag": "KeyOD_Walnut_Creek",
+          "destination_flag": "KeyOD_Downtown_San_Francisco"
+        },
+        {
+          "name": "Downtown San Francisco-Walnut Creek",
+          "origin_flag": "KeyOD_Downtown_San_Francisco",
+          "destination_flag": "KeyOD_Walnut_Creek"
+        },
+        {
+          "name": "Moraga-Downtown San Francisco",
+          "origin_flag": "KeyOD_Moraga",
+          "destination_flag": "KeyOD_Downtown_San_Francisco"
+        },
+        {
+          "name": "Downtown San Francisco-Moraga",
+          "origin_flag": "KeyOD_Downtown_San_Francisco",
+          "destination_flag": "KeyOD_Moraga"
+        },
+        {
+          "name": "San Ramon-Downtown San Jose",
+          "origin_flag": "KeyOD_San_Ramon",
+          "destination_flag": "KeyOD_Downtown_San_Jose"
+        },
+        {
+          "name": "Downtown San Jose-San Ramon",
+          "origin_flag": "KeyOD_Downtown_San_Jose",
+          "destination_flag": "KeyOD_San_Ramon"
+        },
+        {
+          "name": "Brentwood-Walnut Creek",
+          "origin_flag": "KeyOD_Brentwood",
+          "destination_flag": "KeyOD_Walnut_Creek"
+        },
+        {
+          "name": "Walnut Creek-Brentwood",
+          "origin_flag": "KeyOD_Walnut_Creek",
+          "destination_flag": "KeyOD_Brentwood"
+        },
+        {
+          "name": "Walnut Creek-Dublin",
+          "origin_flag": "KeyOD_Walnut_Creek",
+          "destination_flag": "KeyOD_Dublin"
+        },
+        {
+          "name": "Dublin-Walnut Creek",
+          "origin_flag": "KeyOD_Dublin",
+          "destination_flag": "KeyOD_Walnut_Creek"
+        }
+      ]
+    },
+    "school_area": {
+      "enabled": true,
+      "metric_category": "ctp_metric",
+      "source": "Future_No_Project_CombinedPerformanceMeasures.ipynb",
+      "buffer_miles": 0.5,
+      "vmt_output_file": "school_area_vmt_by_rtpc.csv",
+      "speed_output_file": "school_area_average_speed_by_rtpc.csv"
+    },
+    "vmt_rates": {
+      "enabled": true,
+      "metric_category": "ctp_metric",
+      "source": "Future_No_Project_CombinedPerformanceMeasures.ipynb",
+      "output_file": "vmt_rates_by_rtpc.csv",
+      "detail_output_file": "vmt_rates_by_taz.csv"
+    },
+    "active_transportation": {
+      "enabled": true,
+      "metric_category": "ctp_metric",
+      "source": "Future_No_Project_CombinedPerformanceMeasures.ipynb",
+      "distance_limit": 3.0,
+      "output_file": "active_transportation_by_rtpc.csv",
+      "combined_output_file": "combined_walk_bike_by_rtpc.csv"
+    },
+    "person_trip_mode_share": {
+      "enabled": true,
+      "metric_category": "ctp_metric",
+      "source": "Future_No_Project_CombinedPerformanceMeasures.ipynb",
+      "output_file": "person_trip_mode_share_by_rtpc.csv"
+    },
+    "jobs_accessible_by_transit_45": {
+      "enabled": true,
+      "metric_category": "new_tep_metric",
+      "source": "tep_metrics_package",
+      "name": "jobs_accessible_by_transit_45",
+      "calculation_type": "accessibility",
+      "origin_filters": [
+        "Contra Costa"
+      ],
+      "destination_measure": "TOTEMP",
+      "origin_weight": "TOTPOP",
+      "skim_column": "wTrnW",
+      "threshold": 45,
+      "output_file": "accessibility_jobs_transit_45.csv"
+    },
+    "population_to_coc_by_transit_45": {
+      "enabled": true,
+      "metric_category": "new_tep_metric",
+      "source": "tep_metrics_package",
+      "name": "population_to_coc_by_transit_45",
+      "calculation_type": "population_share",
+      "origin_filters": [
+        "Contra Costa"
+      ],
+      "destination_filter": "CommunitiesOfConcern",
+      "origin_measure": "TOTPOP",
+      "skim_column": "wTrnW",
+      "threshold": 45,
+      "output_file": "population_share_coc_transit_45.csv"
+    },
+    "transit_delay": {
+      "enabled": true,
+      "metric_category": "new_tep_metric",
+      "source": "tep_metrics_package",
+      "group_by": [
+        "COUNTY",
+        "Agency",
+        "timeperiod"
+      ],
+      "filters": {
+        "COUNTY": [
+          "Contra Costa",
+          "Alameda",
+          "San Francisco"
+        ]
+      },
+      "output_file": "transit_in_vehicle_delay.csv"
+    },
+    "transit_boarding": {
+      "enabled": true,
+      "metric_category": "new_tep_metric",
+      "source": "tep_metrics_package",
+      "group_by": [
+        "COUNTY",
+        "Agency",
+        "Technology",
+        "timeperiod"
+      ],
+      "pivot_index": [
+        "COUNTY",
+        "Agency",
+        "Technology"
+      ],
+      "filters": {
+        "COUNTY": [
+          "Contra Costa",
+          "Alameda",
+          "San Francisco"
+        ]
+      },
+      "boarding_output_file": "transit_boardings.csv",
+      "boarding_by_stops_output_file": "transit_boardings_by_stops.csv"
+    },
+    "transit_waiting": {
+      "enabled": true,
+      "metric_category": "new_tep_metric",
+      "source": "tep_metrics_package",
+      "group_by": [
+        "COUNTY",
+        "Transit Mode",
+        "Access"
+      ],
+      "filters": {
+        "COUNTY": [
+          "Contra Costa",
+          "Alameda",
+          "San Francisco"
+        ]
+      },
+      "output_file": "transit_waiting_time.csv"
+    }
+  },
+  "paths": {
+    "scenario_dir": "../data/test_scenario",
+    "scenario_files": {
+      "metrics_output_dir": "tep_metrics",
+      "rtpc_highway_network": "GIS_data/Cube_Network_RTPC_QAQC.gpkg",
+      "highway_geometry": "GIS_data/tep_highway_geometry.shp",
+      "individual_trips": "main/indivTripData_3.csv",
+      "joint_trips": "main/jointTripData_3.csv",
+      "time_skims_by_period": {
+        "AM": "database/TimeSkimsDatabaseAM.csv",
+        "MD": "database/TimeSkimsDatabaseMD.csv",
+        "PM": "database/TimeSkimsDatabasePM.csv"
+      },
+      "vmt_home_work": "core_summaries/AutoTripsVMT_perOrigDestHomeWork.csv",
+      "persons_home_work": "core_summaries/AutoTripsVMT_personsHomeWork.csv",
+      "nonmotorized_distance_matrix": "database/nonmotorized_distances.csv",
+      "trnline_file": "trn/trnline.csv",
+      "trnlink_file": "trn/trnlink.csv",
+      "scenario_taz_data": "landuse/tazData.csv",
+      "accessibility_time_skims": "database/TimeSkimsDatabaseAM.csv",
+      "transit_waiting_time": "metrics/transit_times_by_acc_mode_egr_taz.csv",
+      "highway_assignment_file": "hwy/{iteration}/load{period}_renamed_links.dbf",
+      "transit_assignment_dir": "trn/TransitAssignment.{iteration}"
+    },
+    "reference_files": {
+      "taz_filter": "../data/reference/taz_filter.csv",
+      "school_locations": "../data/reference/school.shp",
+      "stop_filter_file": "../data/reference/transit_stops.csv",
+      "transit_mode_line_lookup": "../data/reference/transitModeAndLine.csv",
+      "rtpc_boundaries": "../data/reference/CCTA_RTPC.shp"
+    }
+  },
+  "run": {
+    "iteration": "iter3",
+    "rtpc_highway_network_layer": "Cube_Network_RTPC_QAQC",
+    "time_periods": [
+      "AM",
+      "PM",
+      "MD",
+      "EV",
+      "EA"
+    ]
+  },
+  "taz": {
+    "zone_column": "ZONE",
+    "filter_zone_column": "TAZ",
+    "county_code_column": "COUNTY",
+    "county_name_column": "County Name",
+    "population_column": "TOTPOP",
+    "employment_column": "TOTEMP",
+    "validate_binary_filters": true
+  },
+  "transit_modes": [
+    "wlk_com_wlk",
+    "drv_com_wlk",
+    "wlk_com_drv",
+    "wlk_hvy_wlk",
+    "drv_hvy_wlk",
+    "wlk_hvy_drv",
+    "wlk_lrf_wlk",
+    "drv_lrf_wlk",
+    "wlk_lrf_drv",
+    "wlk_exp_wlk",
+    "drv_exp_wlk",
+    "wlk_exp_drv",
+    "wlk_loc_wlk",
+    "drv_loc_wlk",
+    "wlk_loc_drv"
+  ],
+  "highway_columns": [
+    "A",
+    "B",
+    "FT",
+    "AT",
+    "COUNTY",
+    "DISTANCE",
+    "FFS",
+    "LANES",
+    "FFT",
+    "CTIM",
+    "BRT"
+  ]
+}

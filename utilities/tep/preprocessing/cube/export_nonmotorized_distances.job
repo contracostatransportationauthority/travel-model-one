@@ -1,0 +1,31 @@
+; ============================================================================
+; Export nonmotorized distance skims for the Active Transportation metric.
+;
+; Run this job from the model scenario directory. The source matrix is created
+; by the travel model's NonMotorizedSkims.job. The output filename matches
+; paths.scenario_files.nonmotorized_distance_matrix in scenario_metrics.json.
+;
+; Input:
+;   skims\nonmotskm.tpp
+;     Matrix 1 = DISTWALK
+;     Matrix 2 = DISTBIKE
+;     Matrix 3 = DIST
+;
+; Output:
+;   database\nonmotorized_distances.csv
+; ============================================================================
+
+RUN PGM=MATRIX
+    FILEI MATI[1] = "skims\nonmotskm.tpp"
+    FILEO RECO[1] = "database\nonmotorized_distances.csv",
+        FIELDS=orig,dest,DISTWALK,DISTBIKE,DIST
+
+    JLOOP
+        RO.orig = I
+        RO.dest = J
+        RO.DISTWALK = MI.1.1
+        RO.DISTBIKE = MI.1.2
+        RO.DIST = MI.1.3
+        WRITE RECO=1
+    ENDJLOOP
+ENDRUN

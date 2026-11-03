@@ -1,0 +1,6 @@
+.venv/
+data/
+tests/
+__pycache__/
+*.py[cod]
+runMetrics.local.bat
