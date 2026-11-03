@@ -41,15 +41,14 @@ loop period = 1,5
 		FILEO linko   = hwy\iter3\load@token_period@_renamed_links.dbf, FORMAT=DBF
 	
 	ENDRUN
+
+	; Export geometry for every period. Some scenario networks contain a small
+	; number of period-specific links, so an AM-only geometry export is incomplete.
+	RUN PGM=NETWORK
+		FILEI NETI[1] = hwy\iter3\load@token_period@_renamed.net
+		FILEO LINKO = GIS_data\tep_highway_geometry_@token_period@.shp, FORMAT=SHP
+	ENDRUN
 	
    enddistributemultistep
 
 endloop
-
-; Export one final loaded network with link geometry. The Python highway
-; preprocessor joins the five period DBFs to this A-B geometry table.
-RUN PGM=NETWORK
-   FILEI NETI[1] = hwy\iter3\loadAM_renamed.net
-   FILEO LINKO = GIS_data\tep_highway_geometry.shp, FORMAT=SHP
-ENDRUN
-

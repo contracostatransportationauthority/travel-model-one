@@ -227,7 +227,7 @@
     "scenario_files": {
       "metrics_output_dir": "tep_metrics",
       "rtpc_highway_network": "GIS_data/Cube_Network_RTPC_QAQC.gpkg",
-      "highway_geometry": "GIS_data/tep_highway_geometry.shp",
+      "highway_geometry": "GIS_data/tep_highway_geometry_{period}.shp",
       "individual_trips": "main/indivTripData_3.csv",
       "joint_trips": "main/jointTripData_3.csv",
       "time_skims_by_period": {
@@ -256,7 +256,7 @@
   },
   "run": {
     "iteration": "iter3",
-    "highway_geometry_crs": "EPSG:26910",
+    "highway_geometry_crs": "ESRI:103896",
     "rtpc_highway_network_layer": "Cube_Network_RTPC_QAQC",
     "time_periods": [
       "AM",

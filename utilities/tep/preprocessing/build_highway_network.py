@@ -1,7 +1,7 @@
 """Build the five-period, RTPC-tagged highway GeoPackage used by TEP metrics.
 
-CUBE first exports the final AM network as a geometry shapefile and all five
-final assignment networks as DBF tables. This script performs the remaining
+CUBE first exports all five final assignment networks as geometry shapefiles
+and DBF tables. This script performs the remaining
 portable preprocessing: it combines the periods, calculates passenger-vehicle
 volumes, assigns RTPCs by link midpoint, and writes the metric-ready GeoPackage.
 """
@@ -37,7 +37,7 @@ def align_spatial_crs(
         if not assumed_geometry_crs:
             raise ValueError(
                 "CUBE highway geometry has no CRS. Set run.highway_geometry_crs "
-                "to the native CRS of the model network (normally EPSG:26910)."
+                "to the native CRS of the model network."
             )
         geometry = geometry.set_crs(assumed_geometry_crs, allow_override=True)
         print(
@@ -58,8 +58,7 @@ def align_spatial_crs(
         raise ValueError(
             "Highway geometry and RTPC boundaries do not overlap after CRS alignment. "
             f"Highway bounds: {geometry.total_bounds.tolist()}; RTPC bounds: "
-            f"{rtpc.total_bounds.tolist()}. Check run.highway_geometry_crs; the "
-            "Travel Model One network normally uses EPSG:26910."
+            f"{rtpc.total_bounds.tolist()}. Check run.highway_geometry_crs."
         )
     return geometry, rtpc
 
@@ -114,12 +113,32 @@ def build_highway_network(config: dict) -> Path:
 
     combined = combine_highway_periods(period_frames)
 
-    geometry = gpd.read_file(resolve_path(config, "highway_geometry"))
-    require_columns(geometry, ["A", "B", "NAME", "ROADWAY", "geometry"],
-                    "CUBE highway geometry")
-    geometry = geometry[["A", "B", "NAME", "ROADWAY", "geometry"]].drop_duplicates(
-        ["A", "B"], keep="first"
-    )
+    geometry_frames = []
+    for period in PERIODS:
+        period_geometry = gpd.read_file(
+            resolve_path(config, "highway_geometry", period=period)
+        )
+        require_columns(
+            period_geometry,
+            ["A", "B", "NAME", "ROADWAY", "geometry"],
+            f"{period} CUBE highway geometry",
+        )
+        if period_geometry.crs is None:
+            configured_crs = config["run"].get("highway_geometry_crs")
+            if not configured_crs:
+                raise ValueError(
+                    "CUBE highway geometry has no CRS. Set run.highway_geometry_crs "
+                    "to the native CRS of the model network."
+                )
+            period_geometry = period_geometry.set_crs(configured_crs)
+        geometry_frames.append(
+            period_geometry[["A", "B", "NAME", "ROADWAY", "geometry"]]
+        )
+    geometry = gpd.GeoDataFrame(
+        pd.concat(geometry_frames, ignore_index=True),
+        geometry="geometry",
+        crs=geometry_frames[0].crs,
+    ).drop_duplicates(["A", "B"], keep="first")
 
     rtpc = gpd.read_file(resolve_path(config, "rtpc_boundaries"))
     require_columns(rtpc, ["SUBAREA", "geometry"], "RTPC boundaries")

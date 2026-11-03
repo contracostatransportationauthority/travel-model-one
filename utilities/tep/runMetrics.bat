@@ -217,7 +217,7 @@ echo.
 echo [2/7] Exporting highway assignment DBFs and geometry with CUBE...
 call :capture_time STEP_START
 if "%HIGHWAY_EXPORTS_READY%"=="1" (
-    echo Reusing existing highway DBFs and geometry shapefile.
+    echo Reusing existing highway DBFs and period geometry shapefiles.
 ) else (
     if not exist "GIS_data" mkdir "GIS_data"
     "%RUNTPP_EXE%" "%EXPORT_HIGHWAY_JOB%"

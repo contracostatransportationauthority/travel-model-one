@@ -92,7 +92,10 @@ def missing_metric_inputs(config):
 
 def preprocessing_group_paths(config):
     """Return output files used to decide whether preprocessing can be reused."""
-    highway_geometry = resolve_path(config, "highway_geometry")
+    highway_geometries = [
+        resolve_path(config, "highway_geometry", period=period)
+        for period in config["run"]["time_periods"]
+    ]
     return {
         "core_summaries": [
             resolve_path(config, "vmt_home_work"),
@@ -101,9 +104,11 @@ def preprocessing_group_paths(config):
         # CUBE's shapefile export has multiple required sidecars. A .prj is not
         # required because build_highway_network applies the configured CRS.
         "highway_exports": _highway_assignment_files(config) + [
-            highway_geometry,
-            highway_geometry.with_suffix(".dbf"),
-            highway_geometry.with_suffix(".shx"),
+            component
+            for geometry in highway_geometries
+            for component in (
+                geometry, geometry.with_suffix(".dbf"), geometry.with_suffix(".shx")
+            )
         ],
         "highway_network": [resolve_path(config, "rtpc_highway_network")],
         "transit_sequences": _transit_assignment_files(config, converted=True),
