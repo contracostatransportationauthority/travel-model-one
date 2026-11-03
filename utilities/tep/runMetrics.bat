@@ -106,8 +106,10 @@ if /I not "%MODEL_ITERATION%"=="iter3" (
 
 uv run --directory "%METRICS_PROJECT%" --project "%METRICS_PROJECT%" --locked python preprocessing\check_inputs.py --config "%CONFIG_FILE%" --group core_summaries >nul 2>&1
 if errorlevel 1 (set "CORE_READY=0") else (set "CORE_READY=1")
-uv run --directory "%METRICS_PROJECT%" --project "%METRICS_PROJECT%" --locked python preprocessing\check_inputs.py --config "%CONFIG_FILE%" --group highway >nul 2>&1
-if errorlevel 1 (set "HIGHWAY_READY=0") else (set "HIGHWAY_READY=1")
+uv run --directory "%METRICS_PROJECT%" --project "%METRICS_PROJECT%" --locked python preprocessing\check_inputs.py --config "%CONFIG_FILE%" --group highway_exports >nul 2>&1
+if errorlevel 1 (set "HIGHWAY_EXPORTS_READY=0") else (set "HIGHWAY_EXPORTS_READY=1")
+uv run --directory "%METRICS_PROJECT%" --project "%METRICS_PROJECT%" --locked python preprocessing\check_inputs.py --config "%CONFIG_FILE%" --group highway_network >nul 2>&1
+if errorlevel 1 (set "HIGHWAY_NETWORK_READY=0") else (set "HIGHWAY_NETWORK_READY=1")
 uv run --directory "%METRICS_PROJECT%" --project "%METRICS_PROJECT%" --locked python preprocessing\check_inputs.py --config "%CONFIG_FILE%" --group transit_sequences >nul 2>&1
 if errorlevel 1 (set "TRANSIT_SEQ_READY=0") else (set "TRANSIT_SEQ_READY=1")
 uv run --directory "%METRICS_PROJECT%" --project "%METRICS_PROJECT%" --locked python preprocessing\check_inputs.py --config "%CONFIG_FILE%" --group transit_waiting >nul 2>&1
@@ -131,7 +133,7 @@ if "%CORE_READY%"=="0" (
 )
 
 set "NEED_CUBE=0"
-if "%HIGHWAY_READY%"=="0" set "NEED_CUBE=1"
+if "%HIGHWAY_EXPORTS_READY%"=="0" set "NEED_CUBE=1"
 if "%TRANSIT_SEQ_READY%"=="0" set "NEED_CUBE=1"
 if "%TRANSIT_WAIT_READY%"=="0" set "NEED_CUBE=1"
 if "%NONMOT_READY%"=="0" set "NEED_CUBE=1"
@@ -214,8 +216,8 @@ call :report_elapsed STEP_START "Step 1 elapsed"
 echo.
 echo [2/7] Exporting highway assignment DBFs and geometry with CUBE...
 call :capture_time STEP_START
-if "%HIGHWAY_READY%"=="1" (
-    echo Reusing existing highway DBFs and RTPC GeoPackage.
+if "%HIGHWAY_EXPORTS_READY%"=="1" (
+    echo Reusing existing highway DBFs and geometry shapefile.
 ) else (
     if not exist "GIS_data" mkdir "GIS_data"
     "%RUNTPP_EXE%" "%EXPORT_HIGHWAY_JOB%"
@@ -232,7 +234,7 @@ call :report_elapsed STEP_START "Step 2 elapsed"
 echo.
 echo [3/7] Building the five-period RTPC highway GeoPackage...
 call :capture_time STEP_START
-if "%HIGHWAY_READY%"=="1" (
+if "%HIGHWAY_NETWORK_READY%"=="1" (
     echo Reusing existing RTPC highway GeoPackage.
 ) else (
     popd

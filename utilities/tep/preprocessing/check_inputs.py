@@ -13,7 +13,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="config/scenario_metrics.json")
     parser.add_argument("--group", choices=[
-        "core_summaries", "highway", "transit_sequences",
+        "core_summaries", "highway_exports", "highway_network", "transit_sequences",
         "transit_waiting", "nonmotorized",
     ])
     parser.add_argument("--verbose", action="store_true",
