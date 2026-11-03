@@ -27,6 +27,43 @@ STATIC_COLUMNS = ("FT", "DISTANCE", "FFS")
 DYNAMIC_COLUMNS = ("CSPD", "VOL_SM", "VOL_HV")
 
 
+def align_spatial_crs(
+    geometry: gpd.GeoDataFrame,
+    rtpc: gpd.GeoDataFrame,
+    assumed_geometry_crs: str | None,
+) -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
+    """Assign a configured CRS to a naive CUBE export and align RTPC polygons."""
+    if geometry.crs is None:
+        if not assumed_geometry_crs:
+            raise ValueError(
+                "CUBE highway geometry has no CRS. Set run.highway_geometry_crs "
+                "to the native CRS of the model network (normally EPSG:26910)."
+            )
+        geometry = geometry.set_crs(assumed_geometry_crs, allow_override=True)
+        print(
+            "CUBE highway geometry has no embedded CRS; "
+            f"using configured CRS {geometry.crs}."
+        )
+    if rtpc.crs is None:
+        raise ValueError(
+            "RTPC boundaries have no CRS. Restore the .prj file alongside the "
+            "configured RTPC shapefile."
+        )
+
+    rtpc = rtpc.to_crs(geometry.crs)
+    gx_min, gy_min, gx_max, gy_max = geometry.total_bounds
+    rx_min, ry_min, rx_max, ry_max = rtpc.total_bounds
+    overlaps = gx_max >= rx_min and rx_max >= gx_min and gy_max >= ry_min and ry_max >= gy_min
+    if not overlaps:
+        raise ValueError(
+            "Highway geometry and RTPC boundaries do not overlap after CRS alignment. "
+            f"Highway bounds: {geometry.total_bounds.tolist()}; RTPC bounds: "
+            f"{rtpc.total_bounds.tolist()}. Check run.highway_geometry_crs; the "
+            "Travel Model One network normally uses EPSG:26910."
+        )
+    return geometry, rtpc
+
+
 def combine_highway_periods(period_frames: dict[str, pd.DataFrame]) -> pd.DataFrame:
     """Combine five CUBE link tables into one wide A-B link table."""
     if set(period_frames) != set(PERIODS):
@@ -86,7 +123,9 @@ def build_highway_network(config: dict) -> Path:
 
     rtpc = gpd.read_file(resolve_path(config, "rtpc_boundaries"))
     require_columns(rtpc, ["SUBAREA", "geometry"], "RTPC boundaries")
-    rtpc = rtpc.to_crs(geometry.crs)
+    geometry, rtpc = align_spatial_crs(
+        geometry, rtpc, config["run"].get("highway_geometry_crs")
+    )
     centers = gpd.GeoDataFrame(
         geometry=geometry.geometry.interpolate(0.5, normalized=True),
         crs=geometry.crs,

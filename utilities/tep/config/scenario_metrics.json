@@ -256,6 +256,7 @@
   },
   "run": {
     "iteration": "iter3",
+    "highway_geometry_crs": "EPSG:26910",
     "rtpc_highway_network_layer": "Cube_Network_RTPC_QAQC",
     "time_periods": [
       "AM",
