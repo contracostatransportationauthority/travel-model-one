@@ -1,0 +1,1 @@
+RunModel_iter0.bat  > RunModel_iter0.log 2>&1
