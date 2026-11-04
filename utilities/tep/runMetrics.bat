@@ -222,7 +222,7 @@ call :capture_time STEP_START
 if "%HIGHWAY_EXPORTS_READY%"=="1" (
     echo Reusing existing highway DBFs and period geometry shapefiles.
 ) else (
-    if not exist "GIS_data" mkdir "GIS_data"
+    if not exist "tep_metrics\intermediate" mkdir "tep_metrics\intermediate"
     "%RUNTPP_EXE%" "%EXPORT_HIGHWAY_JOB%"
     if errorlevel 1 (
         echo.

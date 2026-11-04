@@ -226,8 +226,8 @@
     "scenario_dir": "../../../..",
     "scenario_files": {
       "metrics_output_dir": "tep_metrics",
-      "rtpc_highway_network": "GIS_data/Cube_Network_RTPC_QAQC.gpkg",
-      "highway_geometry": "GIS_data/tep_highway_geometry_{period}.shp",
+      "rtpc_highway_network": "tep_metrics/intermediate/Cube_Network_RTPC_QAQC.gpkg",
+      "highway_geometry": "tep_metrics/intermediate/tep_highway_geometry_{period}.shp",
       "individual_trips": "main/indivTripData_3.csv",
       "joint_trips": "main/jointTripData_3.csv",
       "time_skims_by_period": {

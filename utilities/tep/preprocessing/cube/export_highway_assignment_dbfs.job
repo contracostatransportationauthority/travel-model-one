@@ -46,7 +46,7 @@ loop period = 1,5
 	; number of period-specific links, so an AM-only geometry export is incomplete.
 	RUN PGM=NETWORK
 		FILEI NETI[1] = hwy\iter3\load@token_period@_renamed.net
-		FILEO LINKO = GIS_data\tep_highway_geometry_@token_period@.shp, FORMAT=SHP
+		FILEO LINKO = tep_metrics\intermediate\tep_highway_geometry_@token_period@.shp, FORMAT=SHP
 	ENDRUN
 	
    enddistributemultistep
