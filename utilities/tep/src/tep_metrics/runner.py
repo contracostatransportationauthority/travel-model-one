@@ -162,6 +162,7 @@ def run_accessibility_and_transit_metrics(config):
     from tep_metrics.io.outputs import write_metric
     from tep_metrics.io.validation import require_columns
     from tep_metrics.metrics.accessibility import calculate_accessibility, calculate_population_share
+    from tep_metrics.metrics.transit_boarding import calculate_boarding_summaries
     from tep_metrics.metrics.transit_delay import calculate_link_ivd
     from tep_metrics.metrics.transit_waiting import calculate_waiting_time
 
@@ -258,20 +259,20 @@ def run_accessibility_and_transit_metrics(config):
         mode_line = load_transit_mode_line(config)
         mode_line.loc[mode_line['Technology'].eq('Cable Car'), 'Technology'] = 'Bus'
         delay = calculate_link_ivd(EXCLUDED_TRANSIT_MODES, transit_links, highway, mode_line)
+        delay = apply_filters(delay, boarding_config.get('filters', {}))
         stop_filter = load_transit_stop_filter(config)
-
-        boardings = delay[boarding_config['group_by'] + ['name','Total Boardings']].drop_duplicates()
-        boardings_grouped=boardings.groupby(boarding_config['group_by'], as_index=False).agg({'Total Boardings':'sum'}).reset_index()
-        boardings_grouped_pivot=pd.pivot(index=boarding_config['pivot_index'],columns='timeperiod', values=['Total Boardings'], data=boardings_grouped)
-        boardings_grouped_pivot['Daily'] = boardings_grouped_pivot.sum(axis=1)
-
-        boardings_by_stop = boardings[boardings['A'].isin(stop_filter['stops'].unique())]
-        boardings_by_stopgrouped=boardings_by_stop.groupby(boarding_config['group_by'], as_index=False).agg({'Total Boardings':'sum'}).reset_index()
-        boardings_by_stopgrouped_pivot=pd.pivot(index=boarding_config['pivot_index'],columns='timeperiod', values=['Total Boardings'], data=boardings_by_stopgrouped)
-        boardings_by_stopgrouped_pivot['Daily'] = boardings_by_stopgrouped_pivot.sum(axis=1)
-
-        write_metric(boardings_grouped_pivot, config, boarding_config['boarding_output_file'])
-        write_metric(boardings_by_stopgrouped_pivot, config, boarding_config['boarding_by_stops_output_file'])
+        boardings, boardings_by_stop = calculate_boarding_summaries(
+            delay,
+            boarding_config['group_by'],
+            boarding_config['pivot_index'],
+            stop_filter['stops'],
+        )
+        write_metric(boardings, config, boarding_config['boarding_output_file'])
+        write_metric(
+            boardings_by_stop,
+            config,
+            boarding_config['boarding_by_stops_output_file'],
+        )
 
     waiting_config = metrics['transit_waiting']
     if metric_enabled(config, 'transit_waiting'):
