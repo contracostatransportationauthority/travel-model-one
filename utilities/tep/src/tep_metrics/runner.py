@@ -33,6 +33,18 @@ def metric_enabled(config, name):
     return config['metrics'].get(name, {}).get('enabled', False)
 
 
+def disable_metrics_with_missing_inputs(config):
+    """Disable only enabled metrics whose declared direct inputs are missing."""
+    missing = missing_metric_inputs(config)
+    for name, paths in missing.items():
+        config['metrics'][name]['enabled'] = False
+        print(f"SKIPPED {name}: {len(paths)} direct input file(s) missing")
+        if len(paths) <= 3:
+            for path in paths:
+                print(f"  MISSING {path}")
+    return missing
+
+
 def write_result(data, filename):
     """Write a CTP result with the same visible logging as other metrics."""
     data.to_csv(filename, index=False)
@@ -171,15 +183,18 @@ def run_accessibility_and_transit_metrics(config):
     if not selected_accessibility and not selected_transit:
         return
 
-    taz = load_taz_data(config)
-    zone_column = config['taz']['zone_column']
-    require_columns(taz, [zone_column, config['taz']['county_code_column'], config['taz']['population_column'], config['taz']['employment_column']], 'TAZ data')
-    taz[config['taz']['county_name_column']] = taz[config['taz']['county_code_column']].map(COUNTY_CODES)
-    taz = pd.concat([taz, pd.get_dummies(taz[config['taz']['county_name_column']], dtype='int8')], axis=1)
-    filter_file = resolve_path(config, 'taz_filter')
-    taz, user_filter_columns = add_taz_filters(taz, filter_file, zone_column, config['taz']['filter_zone_column'], config['taz']['validate_binary_filters'])
+    taz = None
+    user_filter_columns = []
     county_filter_columns = list(COUNTY_CODES.values())
-    skims = load_time_skims(config)
+    zone_column = config['taz']['zone_column']
+    if selected_accessibility or metric_enabled(config, 'transit_waiting'):
+        taz = load_taz_data(config)
+        require_columns(taz, [zone_column, config['taz']['county_code_column'], config['taz']['population_column'], config['taz']['employment_column']], 'TAZ data')
+        taz[config['taz']['county_name_column']] = taz[config['taz']['county_code_column']].map(COUNTY_CODES)
+        taz = pd.concat([taz, pd.get_dummies(taz[config['taz']['county_name_column']], dtype='int8')], axis=1)
+        filter_file = resolve_path(config, 'taz_filter')
+        taz, user_filter_columns = add_taz_filters(taz, filter_file, zone_column, config['taz']['filter_zone_column'], config['taz']['validate_binary_filters'])
+    skims = load_time_skims(config) if selected_accessibility else None
     transit_access_cache = {}
 
     for metric in selected_accessibility:
@@ -268,12 +283,7 @@ def run_accessibility_and_transit_metrics(config):
 def run(config):
     """Run the new and original metrics from one configuration and entry point."""
     run_ctp_metrics(config)
-    try:
-        run_accessibility_and_transit_metrics(config)
-    except FileNotFoundError as exc:
-        if config.get('missing_input_policy') != 'skip':
-            raise
-        print(f"SKIPPED accessibility/transit metrics: missing input {exc.filename}")
+    run_accessibility_and_transit_metrics(config)
 
 
 def main():
@@ -285,10 +295,8 @@ def main():
     )
     args = parser.parse_args()
     config = load_config(args.config)
-    if args.available_inputs_only:
-        for name, paths in missing_metric_inputs(config).items():
-            config['metrics'][name]['enabled'] = False
-            print(f"SKIPPED {name}: {len(paths)} direct input file(s) missing")
+    if args.available_inputs_only or config.get('missing_input_policy') == 'skip':
+        disable_metrics_with_missing_inputs(config)
     run(config)
 
 
