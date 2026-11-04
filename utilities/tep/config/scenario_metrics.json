@@ -223,7 +223,7 @@
     }
   },
   "paths": {
-    "scenario_dir": "../data/test_scenario",
+    "scenario_dir": "../../../..",
     "scenario_files": {
       "metrics_output_dir": "tep_metrics",
       "rtpc_highway_network": "GIS_data/Cube_Network_RTPC_QAQC.gpkg",

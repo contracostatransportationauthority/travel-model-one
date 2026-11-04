@@ -10,16 +10,6 @@ set CONFIG_FILE=config\scenario_metrics.json
 for %%I in ("%~dp0.") do set "METRICS_PROJECT=%%~fI"
 set "PYTHONPATH=%METRICS_PROJECT%\src"
 
-:: When this repository is deployed as <scenario>\CTRAMP, infer the scenario
-:: root from the runner location. An explicitly supplied TEP_SCENARIO_DIR keeps
-:: highest priority; non-embedded development checkouts continue using JSON.
-for %%I in ("%~dp0..\..") do set "TEP_REPO_ROOT=%%~fI"
-for %%I in ("!TEP_REPO_ROOT!") do set "TEP_REPO_NAME=%%~nxI"
-if not defined TEP_SCENARIO_DIR if /I "!TEP_REPO_NAME!"=="CTRAMP" (
-    for %%I in ("!TEP_REPO_ROOT!\..") do set "TEP_SCENARIO_DIR=%%~fI"
-    echo Detected embedded scenario directory: !TEP_SCENARIO_DIR!
-)
-
 :: =============================================================================
 :: Prerequisites
 ::
@@ -161,7 +151,10 @@ if "%NEED_CUBE%"=="1" (
     echo Using CUBE runner: %RUNTPP_EXE%
 )
 
-for %%I in ("%~dp0..\..\model-files\RunCoreSummaries.bat") do set "CORE_SUMMARIES_BAT=%%~fI"
+set "CORE_SUMMARIES_BAT=%SCENARIO_DIR%\CTRAMP\model-files\RunCoreSummaries.bat"
+if not exist "!CORE_SUMMARIES_BAT!" (
+    for %%I in ("%~dp0..\..\model-files\RunCoreSummaries.bat") do set "CORE_SUMMARIES_BAT=%%~fI"
+)
 for %%I in ("%~dp0preprocessing\cube\export_highway_assignment_dbfs.job") do set "EXPORT_HIGHWAY_JOB=%%~fI"
 for %%I in ("%~dp0preprocessing\cube\convert_trnlinks.job") do set "CONVERT_TRNLINKS_JOB=%%~fI"
 for %%I in ("%~dp0preprocessing\cube\sum_transit_times.job") do set "SUM_TRANSIT_TIMES_JOB=%%~fI"

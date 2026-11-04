@@ -9,18 +9,7 @@ def load_config(filename):
         config = json.load(stream)
     config["_config_dir"] = str(config_path.parent)
     scenario_override = os.environ.get("TEP_SCENARIO_DIR")
-    tep_project = config_path.parent.parent
-    repository_root = tep_project.parent.parent
-    embedded_scenario = (
-        repository_root.parent
-        if repository_root.name.lower() == "ctramp"
-        else None
-    )
-    scenario_dir = Path(
-        scenario_override
-        or embedded_scenario
-        or config["paths"]["scenario_dir"]
-    )
+    scenario_dir = Path(scenario_override or config["paths"]["scenario_dir"])
     if not scenario_dir.is_absolute():
         scenario_dir = config_path.parent / scenario_dir
     config["_scenario_dir"] = str(scenario_dir.resolve())
