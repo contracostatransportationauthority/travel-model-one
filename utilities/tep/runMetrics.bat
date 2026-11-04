@@ -10,6 +10,16 @@ set CONFIG_FILE=config\scenario_metrics.json
 for %%I in ("%~dp0.") do set "METRICS_PROJECT=%%~fI"
 set "PYTHONPATH=%METRICS_PROJECT%\src"
 
+:: When this repository is deployed as <scenario>\CTRAMP, infer the scenario
+:: root from the runner location. An explicitly supplied TEP_SCENARIO_DIR keeps
+:: highest priority; non-embedded development checkouts continue using JSON.
+for %%I in ("%~dp0..\..") do set "TEP_REPO_ROOT=%%~fI"
+for %%I in ("!TEP_REPO_ROOT!") do set "TEP_REPO_NAME=%%~nxI"
+if not defined TEP_SCENARIO_DIR if /I "!TEP_REPO_NAME!"=="CTRAMP" (
+    for %%I in ("!TEP_REPO_ROOT!\..") do set "TEP_SCENARIO_DIR=%%~fI"
+    echo Detected embedded scenario directory: !TEP_SCENARIO_DIR!
+)
+
 :: =============================================================================
 :: Prerequisites
 ::
