@@ -1,0 +1,54 @@
+; ============================================================================
+; Export the five renamed highway assignment networks to DBF.
+;
+; Run from the model scenario directory. These DBFs are consumed by the
+; Transit Delay and Transit Boardings metrics.
+; ============================================================================
+
+counter = 0
+
+; time period loop
+loop period = 1,5
+
+   ; define a two-letter token for each time period
+   if (period = 1)   
+      token_period = 'EA'
+      
+   elseif (period = 2)   
+      token_period = 'AM'
+      
+   elseif (period = 3)   
+      token_period = 'MD'
+      
+   elseif (period = 4)   
+      token_period = 'PM'
+      
+   elseif (period = 5)   
+      token_period = 'EV'
+      
+   endif
+   
+	 counter = counter + 1
+	 DistributeMultistep processid = "CTRAMP", processnum = counter
+	
+	
+	RUN PGM=NETWORK
+	
+	
+	
+		FILEI neti[1] = hwy\iter3\load@token_period@_renamed.net
+	
+		FILEO linko   = hwy\iter3\load@token_period@_renamed_links.dbf, FORMAT=DBF
+	
+	ENDRUN
+
+	; Export geometry for every period. Some scenario networks contain a small
+	; number of period-specific links, so an AM-only geometry export is incomplete.
+	RUN PGM=NETWORK
+		FILEI NETI[1] = hwy\iter3\load@token_period@_renamed.net
+		FILEO LINKO = tep_metrics\intermediate\tep_highway_geometry_@token_period@.shp, FORMAT=SHP
+	ENDRUN
+	
+   enddistributemultistep
+
+endloop

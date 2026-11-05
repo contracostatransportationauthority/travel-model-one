@@ -1,0 +1,11 @@
+.venv/
+tests/
+__pycache__/
+*.py[cod]
+runMetrics.local.bat
+
+# Ignore everything in data/
+# But keep data/reference/ and And keep all files/subfolders inside it
+data/*
+!data/reference/ 
+!data/reference/**
