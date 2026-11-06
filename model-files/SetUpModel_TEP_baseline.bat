@@ -118,6 +118,11 @@ mkdir INPUT\hwy
 mkdir INPUT\trn
 c:\windows\system32\Robocopy.exe /E "%BCM_INPUTS_SHELF%\trn"                                     		INPUT\trn
 
+
+:: Copy TEP inputs
+c:\windows\system32\Robocopy.exe /E "%BCM_INPUTS_TEP%"                                     		INPUT
+
+
 :: ------------------------------------------------------------------------------------------------------
 ::
 :: Step 4: Copy TEP-specific inputs that apply to all TEP scenarios
