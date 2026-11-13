@@ -1,0 +1,69 @@
+		  ; maximum wait time for shuttles at the Great America Station set to 5 minutes. NODE #2192946 is the Great America Station. The other two nodes are nearby shuttle stops.
+		  factor MAXWAITTIME=5, NODES=2019349, 2192946, 2019349
+		  
+		  ; seamless transit outside Contra Costa County
+		  factor MAXWAITTIME=5, NODES=9550800,2192807,1027617,1027620,1027608,4507449,3515736,2625944,2625953
+		  factor MAXWAITTIME=3, NODES=1556378,1556371,5015671,2625948,2625959 
+
+
+		  ; Seamless transit inside Contra Costa County    
+		  ; El Cerrito del Norte BART (the only CC seamless node with WAITTIME=3)
+		   factor MAXWAITTIME=3, NODES=3097281, 3013083
+		
+		factor MAXWAITTIME=5, NODES= 
+		; remaining contra costa seamless nodes all have WAITTIME=5
+
+		  ; Antioch BART
+		   3097288,	3011849,  
+		  ; Concord BART		   
+		   3026849, 3097275,
+		  ; Contra Costa College 
+		   3003121,
+		  ; Lafayette BART
+		  ; 3070076, 3097278,
+		  ; Richmond - Marina Way S / Regatta
+   		   3040318, 
+		  ; Martinez Amtrak
+		   3097283, 3030474,
+		  ; El Cerrito Plaza BART  
+		   3055536, 3097280,
+		  ; Danville Park & Ride
+		   3080047, 
+		  ; Orinda BART		   
+		  ; 3002261, 3097279, 
+		  ; Pittsburg/Bay Point BART
+		   3097273, 3062566,
+		  ; Pittsburg Center 
+		   3097287, 3071779,   
+		  ; Pleasant Hill/Contra Costa Centre BART		  	   
+		   3097276, 3068061,   
+		  ; Richmond BART/Amtrak
+		   3097282, 3055887,
+		  ; Richmond - Harbour Way S / Ford Point
+		   3055727, 
+		  ; San Ramon Transit Center 
+		   3019059, 
+		  ; Walnut Creek BART		   
+		   3065196, 3097277, 
+		  ; Brentwood Park & Ride
+		   3040351,
+		  ; Pacheco Blvd / Blum Rd		   
+		   3066695,
+		  ; Hilltop Mall
+		   3031441,
+		  ; Hercules Transit Center		   
+		   3029366,
+		  ; Shadelands / N Wiget Ln
+		   3009925,  
+		  ; Richmond Parkway Transit Center
+		   3052384, 
+		  ; North Concord/Martinez BART
+		   3097274, 3061314, 
+		  ; Oakley - Main St / O'Hara Ave
+		  ; 3055184,
+		  ; Clayton Rd / Kirker Pass Rd
+		   3078370,  
+		  ; Martinez - 590 Center Ave
+		   3002516, 
+		  ; Lone Tree Way / Canada Valley Rd
+		   3045347
